@@ -10,15 +10,12 @@ const authSchema = await auth.api.generateOpenAPISchema()
 export const swaggerConfig = swagger({
   documentation: {
     info: {
-      title:       'BED Stack API',
-      version:     '1.0.0',
+      title: 'BED Stack API',
+      version: '1.0.0',
       description: 'Bun · ElysiaJS · Drizzle backend boilerplate',
     },
     servers: [{ url: env.BETTER_AUTH_URL }],
-    tags: [
-      { name: 'auth', description: 'Authentication' },
-      ...(authSchema.tags ?? []),
-    ],
+    tags: [{ name: 'auth', description: 'Authentication' }, ...(authSchema.tags ?? [])],
     // better-auth's generated OpenAPI types are looser than openapi-types' strict
     // PathsObject / ComponentsObject, so we narrow them at the merge boundary.
     paths: authSchema.paths as OpenAPIV3.PathsObject,

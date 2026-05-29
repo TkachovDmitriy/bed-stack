@@ -5,10 +5,10 @@ import { db } from '../db'
 import { env } from '../config/env'
 
 export const auth = betterAuth({
-  database:        drizzleAdapter(db, { provider: 'pg' }),
-  secret:          env.BETTER_AUTH_SECRET,
-  baseURL:         env.BETTER_AUTH_URL,
-  trustedOrigins:  env.ALLOWED_ORIGINS.split(','),
+  database: drizzleAdapter(db, { provider: 'pg' }),
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: env.ALLOWED_ORIGINS.split(','),
 
   emailAndPassword: { enabled: true },
 
@@ -31,7 +31,7 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge:  5 * 60, // 5 min — reduces DB lookups per request
+      maxAge: 5 * 60, // 5 min — reduces DB lookups per request
     },
   },
 })

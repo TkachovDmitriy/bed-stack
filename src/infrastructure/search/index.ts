@@ -6,6 +6,6 @@ if (!env.MEILISEARCH_URL) {
 }
 
 export const search = new MeiliSearch({
-  host:   env.MEILISEARCH_URL,
+  host: env.MEILISEARCH_URL ?? '',
   apiKey: env.MEILISEARCH_API_KEY,
 })
