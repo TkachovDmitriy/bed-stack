@@ -1,7 +1,9 @@
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
+import { rateLimit } from 'elysia-rate-limit'
 import { swaggerConfig } from './infrastructure/config/swagger'
 import { auth } from './infrastructure/auth'
+import { logger } from './infrastructure/logger'
 import { env } from './infrastructure/config/env'
 import { AppError } from './shared/errors/app-error'
 
@@ -15,6 +17,7 @@ export function createApp() {
       origin:      env.NODE_ENV === 'production' ? env.ALLOWED_ORIGINS.split(',') : true,
       credentials: true,
     }))
+    .use(rateLimit({ duration: 60_000, max: 100 }))
     .use(swaggerConfig)
     .mount('/api/auth', auth.handler)
     .onError(({ error, set }) => {
@@ -22,6 +25,7 @@ export function createApp() {
         set.status = error.statusCode
         return { error: error.message, code: error.code }
       }
+      logger.error({ err: error }, 'http.error.unhandled')
       set.status = 500
       return { error: 'Internal server error', code: 'INTERNAL_ERROR' }
     })

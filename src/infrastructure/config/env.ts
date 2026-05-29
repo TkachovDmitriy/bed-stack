@@ -16,6 +16,11 @@ const envSchema = z.object({
   // Meilisearch — required only when using search
   MEILISEARCH_URL:     z.string().optional(),
   MEILISEARCH_API_KEY: z.string().optional(),
+  // Social login (optional — enable per provider)
+  GOOGLE_CLIENT_ID:     z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID:     z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
 })
 
 const parsed = envSchema.safeParse(process.env)
