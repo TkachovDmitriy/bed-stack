@@ -1,4 +1,3 @@
-
 import { redis } from './infrastructure/redis'
 import { logger } from './infrastructure/logger'
 

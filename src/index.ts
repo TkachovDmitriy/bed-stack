@@ -7,5 +7,5 @@ await bootstrap()
 
 const app = createApp()
 app.listen(env.PORT, () => {
-  logger.info(`Server running on http://localhost:${env.PORT}`)
+  logger.info({ port: env.PORT }, `Server running on http://localhost:${env.PORT}`)
 })

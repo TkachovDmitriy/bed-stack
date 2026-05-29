@@ -26,8 +26,8 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env)
 
 if (!parsed.success) {
-  process.stderr.write('Invalid environment variables:\n')
-  process.stderr.write(`${JSON.stringify(parsed.error.flatten().fieldErrors, null, 2)}\n`)
+  // biome-ignore lint/suspicious/noConsole: runs before the logger exists (logger imports env)
+  console.error('Invalid environment variables:', parsed.error.flatten().fieldErrors)
   process.exit(1)
 }
 
