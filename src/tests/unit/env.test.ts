@@ -2,24 +2,24 @@ import { describe, expect, it } from 'bun:test'
 import { z } from 'zod'
 
 const envSchema = z.object({
-  NODE_ENV:           z.enum(['development', 'production', 'test']).default('development'),
-  PORT:               z.coerce.number().default(3000),
-  DATABASE_URL:       z.string().url(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string().min(32),
-  BETTER_AUTH_URL:    z.string().url(),
-  REDIS_URL:          z.string().default('redis://localhost:6379'),
-  ALLOWED_ORIGINS:    z.string().default('http://localhost:5173'),
-  AWS_REGION:         z.string().optional(),
-  S3_BUCKET:          z.string().optional(),
-  STRIPE_SECRET_KEY:  z.string().optional(),
-  MEILISEARCH_URL:    z.string().optional(),
-  MEILISEARCH_API_KEY:z.string().optional(),
+  BETTER_AUTH_URL: z.string().url(),
+  REDIS_URL: z.string().default('redis://localhost:6379'),
+  ALLOWED_ORIGINS: z.string().default('http://localhost:5173'),
+  AWS_REGION: z.string().optional(),
+  S3_BUCKET: z.string().optional(),
+  STRIPE_SECRET_KEY: z.string().optional(),
+  MEILISEARCH_URL: z.string().optional(),
+  MEILISEARCH_API_KEY: z.string().optional(),
 })
 
 const validBase = {
-  DATABASE_URL:       'postgresql://postgres:postgres@localhost:5432/test',
+  DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/test',
   BETTER_AUTH_SECRET: 'a'.repeat(32),
-  BETTER_AUTH_URL:    'http://localhost:3000',
+  BETTER_AUTH_URL: 'http://localhost:3000',
 }
 
 describe('env schema', () => {

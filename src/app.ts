@@ -9,14 +9,16 @@ import { AppError } from './shared/errors/app-error'
 
 export function createApp() {
   const v1 = new Elysia({ prefix: '/api/v1' })
-    // register domain plugins here:
-    // .use(usersPlugin)
+  // register domain plugins here:
+  // .use(usersPlugin)
 
   return new Elysia()
-    .use(cors({
-      origin:      env.NODE_ENV === 'production' ? env.ALLOWED_ORIGINS.split(',') : true,
-      credentials: true,
-    }))
+    .use(
+      cors({
+        origin: env.NODE_ENV === 'production' ? env.ALLOWED_ORIGINS.split(',') : true,
+        credentials: true,
+      }),
+    )
     .use(rateLimit({ duration: 60_000, max: 100 }))
     .use(swaggerConfig)
     .mount('/api/auth', auth.handler)
