@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# build output
+dist/
+build/
+
+# bun
+bun.lockb
+*.bun
+
+# drizzle
+src/infrastructure/db/migrations/*.sql
+src/infrastructure/db/migrations/meta/
+
+# logs
+*.log
+logs/
+
+# editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
