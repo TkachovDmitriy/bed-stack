@@ -15,7 +15,10 @@ export const swaggerConfig = swagger({
       description: 'Bun · ElysiaJS · Drizzle backend boilerplate',
     },
     servers: [{ url: env.BETTER_AUTH_URL }],
-    tags: [{ name: 'auth', description: 'Authentication' }, ...(authSchema.tags ?? [])],
+    tags: [
+      { name: 'auth', description: 'Authentication' },
+      ...(authSchema.tags ?? []),
+    ],
     // better-auth's generated OpenAPI types are looser than openapi-types' strict
     // PathsObject / ComponentsObject, so we narrow them at the merge boundary.
     paths: authSchema.paths as OpenAPIV3.PathsObject,
