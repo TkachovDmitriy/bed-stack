@@ -28,5 +28,5 @@ export const swaggerConfig = swagger({
       },
     },
   },
-  mapJsonSchema: { zod: (schema) => (schema as any).toJSONSchema() },
+
 })

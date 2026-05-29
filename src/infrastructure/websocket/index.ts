@@ -17,6 +17,6 @@ export const wsRegistry = {
 
   broadcast(data: unknown): void {
     const payload = JSON.stringify(data)
-    connections.forEach(ws => ws.send(payload))
+    for (const ws of connections.values()) ws.send(payload)
   },
 }

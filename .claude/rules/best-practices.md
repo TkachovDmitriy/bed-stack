@@ -12,7 +12,7 @@ You are an expert backend developer proficient in TypeScript, Bun, ElysiaJS, Dri
 ### TypeScript
 - `function` keyword for pure functions. Omit semicolons.
 - Prefer `interface` over `type`. Use `type` only for unions/intersections.
-- Always run `bun tsc --noEmit` after refactoring.
+- Always run `bun run typecheck` after refactoring.
 - **Discriminated unions** for status/state — never plain string unions:
   ```ts
   type Result<T> = { status: 'success'; data: T } | { status: 'error'; error: Error }
