@@ -49,10 +49,14 @@ export { usersPlugin } from './users.plugin'
 ```ts
 // app.ts
 import { Elysia } from 'elysia'
+import { cors } from '@elysiajs/cors'
+import { rateLimit } from 'elysia-rate-limit'
 import { swaggerConfig } from './infrastructure/config/swagger'
 import { auth } from './infrastructure/auth'
+import { logger } from './infrastructure/logger'
 import { usersPlugin } from './domains/users'
 import { postsPlugin } from './domains/posts'
+import { env } from './infrastructure/config/env'
 import { AppError } from './shared/errors/app-error'
 
 export function createApp() {
@@ -61,6 +65,11 @@ export function createApp() {
     .use(postsPlugin)
 
   return new Elysia()
+    .use(cors({
+      origin:      env.NODE_ENV === 'production' ? env.ALLOWED_ORIGINS.split(',') : true,
+      credentials: true,
+    }))
+    .use(rateLimit({ duration: 60_000, max: 100 }))
     .use(swaggerConfig)
     .mount('/api/auth', auth.handler)
     .onError(({ error, set }) => {
@@ -68,6 +77,7 @@ export function createApp() {
         set.status = error.statusCode
         return { error: error.message, code: error.code }
       }
+      logger.error({ err: error }, 'http.error.unhandled')
       set.status = 500
       return { error: 'Internal server error', code: 'INTERNAL_ERROR' }
     })
@@ -113,8 +123,10 @@ export abstract class UserService {
 import { Elysia } from 'elysia'
 import { auth } from '../../infrastructure/auth'
 
-export const authMiddleware = new Elysia()
-  .derive(async ({ request, error }) => {
+// name → Elysia deduplicates when plugin is used in multiple places
+// as: 'scoped' → context leaks only into the current plugin's routes
+export const authMiddleware = new Elysia({ name: 'auth-middleware' })
+  .derive({ as: 'scoped' }, async ({ request, error }) => {
     const session = await auth.api.getSession({ headers: request.headers })
     if (!session) return error(401, { error: 'Unauthorized', code: 'UNAUTHORIZED' })
     return { user: session.user, session: session.session }
@@ -126,23 +138,34 @@ export const authMiddleware = new Elysia()
 ```ts
 // infrastructure/config/swagger.ts
 import { swagger } from '@elysiajs/swagger'
+import { env } from '../config/env'
 
 export const swaggerConfig = swagger({
   documentation: {
-    info: { title: 'BED Stack API', version: '1.0.0' },
+    info: { title: 'BED Stack API', version: '1.0.0', description: '...' },
+    servers: [{ url: env.BETTER_AUTH_URL }],
     tags: [
       { name: 'users', description: 'User management' },
       { name: 'auth', description: 'Authentication' },
     ],
     components: {
       securitySchemes: {
-        bearerAuth: { type: 'http', scheme: 'bearer' },
+        // Bearer token from POST /api/auth/sign-in/email (bearer plugin)
+        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        // Session cookie set automatically on sign-in
+        cookieAuth: { type: 'apiKey', in: 'cookie', name: 'better-auth.session_token' },
       },
     },
   },
   mapJsonSchema: { zod: (schema) => (schema as any).toJSONSchema() },
 })
 ```
+
+## How to test protected routes in Swagger UI
+
+1. `POST /api/auth/sign-in/email` — sign in, copy `token` from response
+2. Click **Authorize** → paste token into `bearerAuth`
+3. All routes with `security: [{ bearerAuth: [] }]` are now authenticated
 
 ## bootstrap.ts
 
