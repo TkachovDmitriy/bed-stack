@@ -1,10 +1,10 @@
-import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
+import { Elysia } from 'elysia'
 import { rateLimit } from 'elysia-rate-limit'
-import { swaggerConfig } from './infrastructure/config/swagger'
 import { auth } from './infrastructure/auth'
-import { logger } from './infrastructure/logger'
 import { env } from './infrastructure/config/env'
+import { swaggerConfig } from './infrastructure/config/swagger'
+import { logger } from './infrastructure/logger'
 import { AppError } from './shared/errors/app-error'
 import { healthPlugin } from './shared/health/health.plugin'
 

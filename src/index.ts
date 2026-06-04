@@ -1,9 +1,9 @@
-import { bootstrap } from './bootstrap'
 import { createApp } from './app'
+import { bootstrap } from './bootstrap'
 import { env } from './infrastructure/config/env'
+import { pgClient } from './infrastructure/db'
 import { logger } from './infrastructure/logger'
 import { redis } from './infrastructure/redis'
-import { pgClient } from './infrastructure/db'
 
 await bootstrap()
 

@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm'
 import { db } from './infrastructure/db'
-import { redis } from './infrastructure/redis'
 import { logger } from './infrastructure/logger'
+import { redis } from './infrastructure/redis'
 
 async function connectDatabase(): Promise<void> {
   await db.execute(sql`SELECT 1`)
