@@ -32,32 +32,31 @@ async function checkRedis(): Promise<ServiceStatus> {
   }
 }
 
-export const healthPlugin = new Elysia({ name: 'health' })
-  .get(
-    '/health',
-    async ({ set }) => {
-      const [database, redisStatus] = await Promise.all([checkDatabase(), checkRedis()])
+export const healthPlugin = new Elysia({ name: 'health' }).get(
+  '/health',
+  async ({ set }) => {
+    const [database, redisStatus] = await Promise.all([checkDatabase(), checkRedis()])
 
-      const health: HealthCheck = {
-        status: database === 'ok' && redisStatus === 'ok' ? 'ok' : 'degraded',
-        uptime: Math.floor(process.uptime()),
-        services: {
-          database,
-          redis: redisStatus,
-        },
-      }
-
-      if (health.status === 'degraded') {
-        set.status = 503
-      }
-
-      return health
-    },
-    {
-      detail: {
-        tags: ['system'],
-        summary: 'Health check',
-        description: 'Returns service health status. 200 = healthy, 503 = degraded.',
+    const health: HealthCheck = {
+      status: database === 'ok' && redisStatus === 'ok' ? 'ok' : 'degraded',
+      uptime: Math.floor(process.uptime()),
+      services: {
+        database,
+        redis: redisStatus,
       },
+    }
+
+    if (health.status === 'degraded') {
+      set.status = 503
+    }
+
+    return health
+  },
+  {
+    detail: {
+      tags: ['system'],
+      summary: 'Health check',
+      description: 'Returns service health status. 200 = healthy, 503 = degraded.',
     },
-  )
+  },
+)

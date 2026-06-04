@@ -16,10 +16,7 @@ async function connectRedis(): Promise<void> {
 export async function bootstrap(): Promise<void> {
   logger.info('bootstrap.start')
 
-  const [dbResult, redisResult] = await Promise.allSettled([
-    connectDatabase(),
-    connectRedis(),
-  ])
+  const [dbResult, redisResult] = await Promise.allSettled([connectDatabase(), connectRedis()])
 
   if (dbResult.status === 'rejected') {
     logger.fatal({ err: dbResult.reason }, 'bootstrap.db.failed')
