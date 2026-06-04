@@ -17,7 +17,7 @@ Backend boilerplate — **B**un · **E**lysiaJS · **D**rizzle ORM.
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) ≥ 1.1
+- [Bun](https://bun.sh) ≥ 1.2
 - [Docker](https://docker.com) + Docker Compose
 
 ## Quick Start
@@ -40,7 +40,8 @@ bun dev
 ```
 
 Server: `http://localhost:3000`  
-Swagger UI: `http://localhost:3000/swagger`
+Swagger UI: `http://localhost:3000/swagger`  
+Health check: `http://localhost:3000/health`
 
 ## Environment Variables
 
@@ -51,17 +52,20 @@ Copy `.env.example` to `.env`. Required variables:
 | `DATABASE_URL`       | PostgreSQL connection string             |
 | `BETTER_AUTH_SECRET` | Random secret ≥ 32 chars                 |
 | `BETTER_AUTH_URL`    | Public URL of this server                |
-| `REDIS_URL`          | Redis connection string                  |
+| `REDIS_URL`          | Redis connection string (default: `redis://localhost:6379`) |
 
-Optional variables (enable per feature):
+Optional variables:
 
-| Variable              | Feature        |
-|-----------------------|----------------|
-| `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
-| `GITHUB_CLIENT_ID/SECRET` | GitHub OAuth |
-| `AWS_REGION` + `S3_BUCKET` | File uploads |
-| `STRIPE_SECRET_KEY`   | Payments       |
-| `MEILISEARCH_URL/API_KEY`  | Full-text search |
+| Variable              | Default                    | Description              |
+|-----------------------|----------------------------|--------------------------|
+| `PORT`                | `3000`                     | HTTP port                |
+| `NODE_ENV`            | `development`              | `development` / `production` / `test` |
+| `ALLOWED_ORIGINS`     | `http://localhost:5173`    | CORS whitelist (comma-separated, production only) |
+| `GOOGLE_CLIENT_ID/SECRET` | —                      | Google OAuth             |
+| `GITHUB_CLIENT_ID/SECRET` | —                      | GitHub OAuth             |
+| `AWS_REGION` + `S3_BUCKET` | —                     | File uploads             |
+| `STRIPE_SECRET_KEY`   | —                          | Payments                 |
+| `MEILISEARCH_URL/API_KEY`  | —                     | Full-text search         |
 
 ## Database
 
@@ -107,9 +111,14 @@ bun check        # biome lint + format
 
 ```
 src/
-├── infrastructure/   # db, auth, redis, logger, storage, payments, search
+├── infrastructure/   # db, auth, redis, logger, storage, payments, search, websocket
 ├── domains/          # feature modules (plugin → service → repository)
-├── shared/           # errors, middleware, types, utils
+├── shared/
+│   ├── errors/       # AppError + typed subclasses
+│   ├── health/       # GET /health (db + redis status)
+│   ├── middleware/   # auth middleware
+│   ├── types/        # ApiResponse, PaginatedResponse
+│   └── utils/
 ├── jobs/             # background job handlers
 ├── tests/            # unit + integration
 ├── bootstrap.ts      # infrastructure startup
@@ -118,11 +127,18 @@ src/
 ```
 
 Each domain follows the pattern:
+
 ```
 domains/{name}/
 ├── index.ts              # public API — export only the plugin
 ├── {name}.plugin.ts      # routes
 ├── {name}.service.ts     # business logic
 ├── {name}.repository.ts  # db queries
-└── {name}.dto.ts         # zod schemas
+├── {name}.dto.ts         # zod schemas + inferred types
+├── {name}.types.ts       # domain interfaces (optional)
+├── {name}.constants.ts   # enums, transition maps (optional)
+└── {name}.ws.ts          # websocket handlers (optional)
 ```
+
+Dependency direction: `plugin → service → repository → db`. Nothing flows backwards.  
+Other domains are imported only through a domain's `index.ts`, never internal files directly.
