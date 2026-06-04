@@ -1,8 +1,8 @@
 import { betterAuth } from 'better-auth'
-import { bearer, twoFactor, multiSession, openAPI } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { db } from '../db'
+import { bearer, multiSession, openAPI, twoFactor } from 'better-auth/plugins'
 import { env } from '../config/env'
+import { db } from '../db'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: 'pg' }),
