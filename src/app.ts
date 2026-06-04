@@ -6,6 +6,7 @@ import { auth } from './infrastructure/auth'
 import { logger } from './infrastructure/logger'
 import { env } from './infrastructure/config/env'
 import { AppError } from './shared/errors/app-error'
+import { healthPlugin } from './shared/health/health.plugin'
 
 export function createApp() {
   const v1 = new Elysia({ prefix: '/api/v1' })
@@ -21,6 +22,7 @@ export function createApp() {
     )
     .use(rateLimit({ duration: 60_000, max: 100 }))
     .use(swaggerConfig)
+    .use(healthPlugin)
     .mount('/api/auth', auth.handler)
     .onError(({ error, set }) => {
       if (error instanceof AppError) {

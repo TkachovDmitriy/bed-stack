@@ -35,9 +35,11 @@ jobs:
           --health-retries 5
 
     env:
+      NODE_ENV: test
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bed_stack_test
       REDIS_URL: redis://localhost:6379
-      NODE_ENV: test
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
