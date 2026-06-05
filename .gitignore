@@ -22,6 +22,9 @@ src/infrastructure/db/migrations/meta/
 *.log
 logs/
 
+# claude code
+.claude/
+
 # editor
 .idea/
 .vscode/
